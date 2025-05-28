@@ -1,0 +1,114 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Arcadia Core - Analytics Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Courier New', monospace;
+            background-color: #121212;
+            color: white;
+        }
+        .sidebar {
+            height: 100vh;
+            width: 220px;
+            position: fixed;
+            background-color: #1a1a1a;
+            padding-top: 20px;
+            border-right: 1px solid #00ffff;
+        }
+        .sidebar a {
+            padding: 12px;
+            text-decoration: none;
+            font-size: 16px;
+            color: #00ffff;
+            display: block;
+        }
+        .sidebar a:hover {
+            background-color: #00ffff33;
+        }
+        .main {
+            margin-left: 240px;
+            padding: 20px;
+        }
+        .chart-container {
+            display: none;
+        }
+        canvas {
+            background-color: #1a1a1a;
+            padding: 10px;
+            border: 1px solid #00ffff;
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <a href="#" onclick="showChart('peak')">Peak Hours</a>
+    <a href="#" onclick="showChart('usage')">Game Usage</a>
+    <a href="#" onclick="showChart('credits')">Credits Spent</a>
+    <a href="#" onclick="showChart('duration')">Avg Duration</a>
+    <a href="#" onclick="showChart('leaderboard')">Top Users</a>
+</div>
+
+<div class="main">
+    <div id="peak" class="chart-container"><h2>Peak Hours</h2><canvas id="peakChart"></canvas></div>
+    <div id="usage" class="chart-container"><h2>Game Usage</h2><canvas id="usageChart"></canvas></div>
+    <div id="credits" class="chart-container"><h2>Credits Spent</h2><canvas id="creditsChart"></canvas></div>
+    <div id="duration" class="chart-container"><h2>Avg Duration</h2><canvas id="durationChart"></canvas></div>
+    <div id="leaderboard" class="chart-container"><h2>Top Users</h2><canvas id="leaderboardChart"></canvas></div>
+</div>
+
+<script>
+    const data = {
+        peak: {labels: ["08", "10", "12", "14", "16", "18"], data: [1, 1, 2, 2, 1, 1]},
+        usage: {labels: ["PS5", "Xbox", "Switch", "PC", "VR", "Arcade"], data: [3, 2, 1, 1, 1, 1]},
+        credits: {labels: ["2024-06-01", "2024-06-02", "2024-06-03"], data: [180, 120, 120]},
+        duration: {labels: ["2024-06-01", "2024-06-02", "2024-06-03"], data: [60, 60, 40]},
+        leaderboard: {labels: ["GamerGirl", "PlayerOne", "NoobMaster"], data: [150, 150, 120]}
+    };
+
+    function renderChart(id, type, label, chartData) {
+        const ctx = document.getElementById(id + "Chart").getContext('2d');
+        new Chart(ctx, {
+            type: type,
+            data: {
+                labels: chartData.labels,
+                datasets: [{
+                    label: label,
+                    data: chartData.data,
+                    backgroundColor: '#00ffff',
+                    borderColor: '#00ffff',
+                    borderWidth: 1,
+                    fill: type !== 'bar',
+                    tension: 0.3
+                }]
+            },
+            options: {
+                indexAxis: id === "leaderboard" ? "y" : "x",
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    }
+
+    function showChart(id) {
+        document.querySelectorAll('.chart-container').forEach(el => el.style.display = 'none');
+        document.getElementById(id).style.display = 'block';
+    }
+
+    renderChart("peak", "bar", "Sessions per Hour", data.peak);
+    renderChart("usage", "bar", "Sessions Played", data.usage);
+    renderChart("credits", "line", "Total Credits Used", data.credits);
+    renderChart("duration", "line", "Avg Duration", data.duration);
+    renderChart("leaderboard", "bar", "Total Minutes Played", data.leaderboard);
+
+    showChart("peak");
+</script>
+
+</body>
+</html>
